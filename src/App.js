@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Route, withRouter } from "react-router-dom";
 
-function App() {
+import Home from "./components/home/home";
+import Manage from "./components/manage/manage";
+import NavBar from './components/UI/navbar/navbar';
+import Trips from './components/trips/trips';
+import "./App.css";
+import Spinner from "./components/UI/spinner/spinner";
+
+const App = (props) => {
+  const [isBusy, setIsBusy] = useState(false);
+
+  let navbar = <NavBar />;
+
+  if(props.history.location.pathname === '/') {
+    navbar = null;
+  }
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+      { navbar }
+      <Route exact path="/" render={() => <Home isBusy={isBusy} setIsBusy={setIsBusy} />} />
+      <Route exact path="/manage" render={() => <Manage isBusy={isBusy} setIsBusy={setIsBusy} />} />
+      <Route exact path="/trips" render={() => <Trips isBusy={isBusy} setIsBusy={setIsBusy} />} />
+      <Spinner isBusy={isBusy}/>
+    </React.Fragment>
   );
-}
+};
 
-export default App;
+export default withRouter(App);

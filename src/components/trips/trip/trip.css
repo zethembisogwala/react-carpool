@@ -1,0 +1,9 @@
+.Trip {
+    padding: 5px;
+    margin: 10px;
+}
+
+.CardActions {
+    position: relative;
+    right: 5;
+}
