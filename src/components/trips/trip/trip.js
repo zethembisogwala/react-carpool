@@ -46,7 +46,7 @@ const Trip = (props) => {
         </Typography>
       </CardContent>
       <CardActions className="CardActions">
-        <Button size="small">Offer ride</Button>
+        <Button onClickHandler={() => props.setOpen(true)} size="small">Offer ride</Button>
       </CardActions>
     </Card>
   );

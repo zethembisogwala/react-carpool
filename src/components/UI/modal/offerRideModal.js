@@ -7,24 +7,22 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
-import VerticalSpace from "../verticalSpace/verticalSpace";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const NewUserModal = (props) => {
+const OfferRideModal = (props) => {
 
   const handleClose = () => {
     props.setOpen(false);
   };
 
-  const onContinueClicked = () => {
+  const onConfirmClicked = () => {
       props.setOpen(false);
       props.setIsBusy(true);
       setTimeout(() => {
         props.setIsBusy(false);
-        props.openNextModal();
       }, 1000);
   }
 
@@ -39,36 +37,19 @@ const NewUserModal = (props) => {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle id="alert-dialog-slide-title">
-          {"Who are you?"}
+          {`Do you want to offer a ride to ${props.toString()}?`}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            We will save this info so you won't have to fill it again, otherwise you may change it in Manage.
+            {props.toString()} will get a message that you want to ride with them
           </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="fullname"
-            label="Full Name"
-            type="text"
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="phonenumber"
-            label="Phone Number"
-            type="text"
-            fullWidth
-          />
-          <VerticalSpace />
         </DialogContent>
         <DialogActions>
           <Button onClickHandler={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClickHandler={onContinueClicked} color="primary">
-            Continue
+          <Button onClickHandler={onConfirmClicked} color="primary">
+            Confirm
           </Button>
         </DialogActions>
       </Dialog>
@@ -76,4 +57,4 @@ const NewUserModal = (props) => {
   );
 };
 
-export default NewUserModal;
+export default OfferRideModal;

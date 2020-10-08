@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { withRouter } from "react-router-dom";
 import Trip from "./trip/trip";
 import VerticalSpace from "../UI/verticalSpace/verticalSpace";
+import OfferRideModal from "../UI/modal/offerRideModal";
 
 const availableTrips = [
   {
@@ -43,6 +44,7 @@ const availableTrips = [
 ];
 
 const Trips = (props) => {
+  const [offerModalOpen, setOfferModalOpen] = useState(false);
   const tripList = availableTrips.map((item, index) => {
     return (
       <Trip
@@ -53,14 +55,16 @@ const Trips = (props) => {
         userId={item.userId}
         isDriving={item.isDriving}
         date={item.date}
+        setOpen={setOfferModalOpen}
       />
     );
   });
 
   return (
     <React.Fragment>
-    <VerticalSpace />
-        {tripList}
+      <VerticalSpace />
+      {tripList}
+      <OfferRideModal isBusy={props.isBusy} setIsBusy={props.setIsBusy} open={offerModalOpen} setOpen={setOfferModalOpen} />
     </React.Fragment>
   );
 };
