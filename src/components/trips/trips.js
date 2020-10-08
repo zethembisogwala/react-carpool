@@ -4,6 +4,8 @@ import Trip from "./trip/trip";
 import VerticalSpace from "../UI/verticalSpace/verticalSpace";
 import OfferRideModal from "../UI/modal/offerRideModal";
 
+import './trips.css';
+
 const availableTrips = [
   {
     id: 1,
@@ -61,11 +63,11 @@ const Trips = (props) => {
   });
 
   return (
-    <React.Fragment>
+    <div className='Trips'>
       <VerticalSpace />
       {tripList}
       <OfferRideModal isBusy={props.isBusy} setIsBusy={props.setIsBusy} open={offerModalOpen} setOpen={setOfferModalOpen} />
-    </React.Fragment>
+    </div>
   );
 };
 

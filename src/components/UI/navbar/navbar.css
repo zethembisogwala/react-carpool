@@ -1,5 +1,6 @@
 .NavBar {
     display: inline-table;
+    padding: 10px;
 }
 
 .NavBarHeader {

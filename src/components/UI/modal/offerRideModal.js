@@ -44,7 +44,7 @@ const OfferRideModal = (props) => {
             {props.toString()} will get a message that you want to ride with them
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{padding: 18}}>
           <Button onClickHandler={handleClose} color="primary">
             Cancel
           </Button>

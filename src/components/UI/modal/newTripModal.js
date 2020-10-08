@@ -95,7 +95,7 @@ const Modal = (props) => {
             />
           </p>
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{padding: 18}}>
           <Button onClickHandler={handleClose} color="primary">
             Cancel
           </Button>

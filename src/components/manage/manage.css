@@ -1,10 +1,9 @@
 .Manage {
-    padding: 15px;
-    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .Bar {
-    width: 100%;
-    display: flex;
-    justify-content: center;
+    padding-top: 10px;
+    
 }
