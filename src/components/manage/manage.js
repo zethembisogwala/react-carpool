@@ -10,7 +10,46 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Badge from "@material-ui/core/Badge";
+import Trip from '../trips/trip/trip';
+
+const trips = [
+  {
+    id: 1,
+    from: "Ulundi",
+    to: "Durban",
+    user: {
+      id: 1,
+      name: "Alexandre Pato",
+    },
+    userId: 1,
+    isDriving: true,
+    date: "08/10/2020",
+  },
+  {
+    id: 2,
+    from: "Ulundi",
+    to: "Empangeni",
+    user: {
+      id: 2,
+      name: "Xavi Hernandez",
+    },
+    userId: 2,
+    isDriving: false,
+    date: "08/10/2020",
+  },
+  {
+    id: 3,
+    from: "Durban",
+    to: "Pietermaritzburg",
+    user: {
+      id: 3,
+      name: "Emmanuel Adebayor",
+    },
+    userId: 3,
+    isDriving: true,
+    date: "08/10/2020",
+  },
+];
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -61,7 +100,7 @@ const SimpleTabs = () => {
   };
 
   return (
-    <div className={classes.root}>
+    <div style={{width: '100%'}} className={classes.root}>
       <AppBar
         position="static"
         style={{
@@ -84,13 +123,20 @@ const SimpleTabs = () => {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        Item One
+      {trips.map(trip => <Trip key={trip.id}
+        from={trip.from}
+        to={trip.to}
+        user={trip.user}
+        userId={trip.userId}
+        isDriving={trip.isDriving}
+        date={trip.date}
+        setOpen={null} />)}
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        No requests to show
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Item Three
+        No offers to show
       </TabPanel>
     </div>
   );
