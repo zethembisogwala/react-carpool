@@ -31,20 +31,19 @@ const useStyles = makeStyles({
 const Trip = (props) => {
   const [users, setUsers] = useState([]);
   useEffect(() => {
-    props.setIsBusy(true);
+    props.setAppState({ ...props.appState, isBusy: true });
     axios
       .get("https://janev-2e278.firebaseio.com/users.json")
       .then((response) => {
         setUsers(objectToList(response.data));
-        props.setIsBusy(false);
+        props.setAppState({ ...props.appState, isBusy: false });
       })
       .catch((error) => {
-        props.setIsBusy(false);
+        props.setAppState({ ...props.appState, isBusy: false, error: true });
       });
-  }, []);
+  }, [props.trip]);
   const classes = useStyles();
   const bull = <span className={classes.bullet}>•</span>;
-  const userId = localStorage.getItem('userId');
   let fullName = '';
   if(users.length > 0) {
       fullName = users.find(user => user.id === props.trip.userId).fullName;

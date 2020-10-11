@@ -17,16 +17,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const Modal = (props) => {
-  const userId = localStorage.getItem('userId');
+  const userId = props.appState.currentUserId;
   const [tripData, setTripData] = useState({
-    from: '',
-    to: '',
+    from: "",
+    to: "",
     date: Date.now(),
     isDriver: false,
-    userId: localStorage.getItem('userId'),
+    userId: `${userId}`,
     valid: false,
     offers: [],
-    requests: []
+    requests: [],
   });
   let actionButtonText = "rides";
   if (tripData.isDriver) {
@@ -34,38 +34,56 @@ const Modal = (props) => {
   }
 
   const handleClose = () => {
-    props.setOpen(false);
+    props.setAppState({ ...props.appState, newTripModalIsOpen: false });
   };
 
   const setFrom = (e) => {
-    setTripData({ ...tripData, from: e.target.value, valid: tripData.to !== '' });
+    setTripData(prevData  => {
+      return {
+        ...prevData,
+        from: e.target.value,
+        valid: prevData.to !== "",
+      }
+    });
   };
 
   const setTo = (e) => {
-    setTripData({ ...tripData, to: e.target.value, valid: tripData.from !== '' });
+    setTripData(prevData => {
+      return {
+        ...prevData,
+        to: e.target.value,
+        valid: prevData.from !== "",
+      }
+    });
   };
 
   const setDriver = () => {
-    setTripData({ ...tripData, isDriver: !tripData.isDriver });
+    setTripData(prevData => {
+      return { ...prevData, isDriver: !prevData.isDriver }
+    });
   };
 
   const handleActionButtonClicked = () => {
-    props.setIsBusy(true);
-    props.setOpen(false);
+    props.setAppState(prevState => {
+      return {
+        ...prevState,
+        newTripModalIsOpen: false,
+        isBusy: true,
+      }
+    });
 
-    if(tripData.valid) {
+    if (tripData.valid && tripData.userId) {
       axios
-      .post("https://janev-2e278.firebaseio.com/trips.json", tripData)
-      .then((response) => {
-        props.setIsBusy(false);
-        props.history.push("/trips");
-      })
-      .catch((error) => {
-        props.setIsBusy(false);
-        props.setError(true);
-      });
-    }
-    else {
+        .post("https://janev-2e278.firebaseio.com/trips.json", tripData)
+        .then((response) => {
+          props.setAppState({ ...props.appState, isBusy: false });
+          props.history.push("/trips");
+        })
+        .catch((error) => {
+          props.setAppState({ ...props.appState, isBusy: false, error: true });
+        });
+    } else {
+      props.setAppState({ ...props.appState, error: true });
       return;
     }
   };
@@ -73,7 +91,7 @@ const Modal = (props) => {
   return (
     <div>
       <Dialog
-        open={props.open}
+        open={props.appState.newTripModalIsOpen}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
@@ -91,7 +109,6 @@ const Modal = (props) => {
           <TextField
             onChange={setFrom}
             value={tripData.from}
-            autoFocus
             margin="dense"
             id="from"
             label="From"

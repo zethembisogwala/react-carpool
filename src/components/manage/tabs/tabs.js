@@ -56,18 +56,19 @@ export const SimpleTabs = React.memo( (props) => {
     const classes = useStyles();
     const [value, setValue] = useState(0);
     const [trips, setTrips] = useState([]);
-    const userId = localStorage.getItem('userId');
   
-    if(userId) {
+    if(props.appState.currentUserId) {
         useEffect(() => {
-            props.setIsBusy(true);
+            props.setAppState({ ...props.appState, isBusy: true });
             axios
               .get("https://janev-2e278.firebaseio.com/trips.json")
               .then((response) => {
-                setTrips(objectToList(response.data).filter(trip => trip.userId === userId));
-                props.setIsBusy(false);
+                setTrips(objectToList(response.data).filter(trip => trip.userId === props.appState.currentUserId));
+                props.setAppState({ ...props.appState, isBusy: false });
               })
-              .catch((error) => console.log(error));
+              .catch((error) => {
+                props.setAppState({ ...props.appState, isBusy: false, error: true });
+              });
           }, []);
     }
   
@@ -104,15 +105,16 @@ export const SimpleTabs = React.memo( (props) => {
                 key={trip.id}
                 trip={trip}
                 setOpen={props.setOpen}
-                setIsBusy={props.setIsBusy}
+                setAppState={props.setAppState}
+                appState={props.appState}
               />
             </div>
           ))}
         </TabPanel>
-        <TabPanel value={value} index={1}>
+        <TabPanel className='Layout' value={value} index={1}>
           No requests to show
         </TabPanel>
-        <TabPanel value={value} index={2}>
+        <TabPanel className='Layout' value={value} index={2}>
           No offers to show
         </TabPanel>
       </div>

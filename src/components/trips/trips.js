@@ -15,14 +15,16 @@ const Trips = (props) => {
   const [trips, setTrips] = useState([]);
 
   useEffect(() => {
-    props.setIsBusy(true);
+    props.setAppState({ ...props.appState, isBusy: true });
     axios
       .get("https://janev-2e278.firebaseio.com/trips.json")
       .then((response) => {
         setTrips(objectToList(response.data));
-        props.setIsBusy(false);
+        props.setAppState({ ...props.appState, isBusy: false });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        props.setAppState({ ...props.appState, error: true });
+      });
   }, []);
 
   const tripList = trips.map((trip) => {
@@ -33,7 +35,8 @@ const Trips = (props) => {
         selectedTrip={selectedTrip}
         setSelectedTrip={setSelectedTrip}
         setOfferModalOpen={setOfferModalOpen}
-        setIsBusy={props.setIsBusy}
+        appState={props.appState}
+        setAppState={props.setAppState}
       />
     );
   });
@@ -43,8 +46,8 @@ const Trips = (props) => {
   }
 
   const onSetSelectedTrip = (set) => {
-      setSelectedTrip(set);
-  }
+    setSelectedTrip(set);
+  };
 
   return (
     <div className="Trips">
@@ -54,8 +57,8 @@ const Trips = (props) => {
         <OfferRideModal
           setSelectedTrip={onSetSelectedTrip}
           selectedTrip={selectedTrip}
-          isBusy={props.isBusy}
-          setIsBusy={props.setIsBusy}
+          appState={props.appState}
+          setAppState={props.setAppState}
           open={offerModalOpen}
           setOpen={setOfferModalOpen}
         />

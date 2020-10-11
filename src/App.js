@@ -10,6 +10,14 @@ import Spinner from "./components/UI/spinner/spinner";
 
 const App = (props) => {
   const [isBusy, setIsBusy] = useState(false);
+  const [appState, setAppState] = useState({
+    error: false,
+    isBusy: false,
+    currentUserId: localStorage.getItem('userId'),
+    newUserModalIsOpen: false,
+    newTripModalIsOpen: false,
+    errorModalIsOpen: false,
+  });
 
   let navbar = <NavBar />;
 
@@ -20,10 +28,10 @@ const App = (props) => {
   return (
     <React.Fragment>
       { navbar }
-      <Route exact path="/" render={() => <Home isBusy={isBusy} setIsBusy={setIsBusy} />} />
-      <Route exact path="/manage" render={() => <Manage isBusy={isBusy} setIsBusy={setIsBusy} />} />
-      <Route exact path="/trips" render={() => <Trips isBusy={isBusy} setIsBusy={setIsBusy} />} />
-      <Spinner isBusy={isBusy}/>
+      <Route exact path="/" render={() => <Home appState={appState} setAppState={setAppState} />} />
+      <Route exact path="/manage" render={() => <Manage appState={appState} setAppState={setAppState} />} />
+      <Route exact path="/trips" render={() => <Trips appState={appState} setAppState={setAppState} />} />
+      <Spinner isBusy={appState.isBusy}/>
     </React.Fragment>
   );
 };

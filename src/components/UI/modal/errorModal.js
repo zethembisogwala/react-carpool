@@ -14,17 +14,17 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const ErrorModal = (props) => {
   const handleClose = () => {
-    props.setOpen(false);
+    props.setAppState({ ...props.appState, error: false });
   };
 
   const onOKClicked = () => {
-    props.setOpen(false);
+    props.setAppState({ ...props.appState, error: false });
   };
 
   return (
     <div>
       <Dialog
-        open={props.show}
+        open={props.appState.error}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}

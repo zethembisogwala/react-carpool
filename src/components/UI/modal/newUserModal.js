@@ -18,25 +18,36 @@ const NewUserModal = (props) => {
   const [userData, setUserData] = useState({ fullName: "", phoneNumber: "" });
 
   const handleClose = () => {
-    props.setOpen(false);
+    props.setAppState({ ...props.appState, newUserModalIsOpen: false });
   };
 
   const onContinueClicked = () => {
-    props.setOpen(false);
-    props.setIsBusy(true);
+    props.setAppState({
+      ...props.appState,
+      newUserModalIsOpen: false,
+      isBusy: true,
+    });
     if (userData.fullName.length > 0 && userData.phoneNumber.length > 0) {
       axios
         .post("https://janev-2e278.firebaseio.com/users.json", userData)
         .then((response) => {
-            console.log(response)
           localStorage.setItem("userId", response.data.name);
-          props.setIsBusy(false);
-          props.openNextModal();
+          props.setAppState(prevState => {
+              return {
+                ...prevState,
+                currentUserId: response.data.name,
+                isBusy: false,
+                newUserModalIsOpen: false,
+                newTripModalIsOpen: true,
+              }
+          });
         })
         .catch((error) => {
-          props.setIsBusy(false);
-          props.setError(true);
+          props.setAppState({ ...props.appState, error: true, isBusy: false });
         });
+    } else {
+      console.log(props.appState);
+      props.setAppState({ ...props.appState, error: true });
     }
   };
 
@@ -50,7 +61,7 @@ const NewUserModal = (props) => {
   return (
     <div>
       <Dialog
-        open={props.open}
+        open={props.appState.newUserModalIsOpen}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
@@ -67,7 +78,6 @@ const NewUserModal = (props) => {
           </DialogContentText>
           <TextField
             onChange={onFullNameChanged}
-            autoFocus
             margin="dense"
             id="fullname"
             label="Full Name"
@@ -76,7 +86,6 @@ const NewUserModal = (props) => {
           />
           <TextField
             onChange={onPhoneNumberChanged}
-            autoFocus
             margin="dense"
             id="phonenumber"
             label="Phone Number"

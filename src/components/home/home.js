@@ -8,55 +8,24 @@ import Button from "../UI/button/button";
 import VerticalSpace from "../UI/verticalSpace/verticalSpace";
 
 const Home = (props) => {
-  const [newUserModalOpen, setNewUserModalOpen] = useState(false);
-  const [newTripModalOpen, setNewTriprModalOpen] = useState(false);
-  const [errorModalIsOpen, setErrorModalIsOpen] = useState(false);
-  const [newUserData, setNewUserData] = useState(false);
-  const [newTripData, setNewTripData] = useState(false);
-
-  const setUserData = () => {
-    setNewUserData();
-  };
-
-  const setTripData = () => {
-    setNewTripData();
-  };
-
   const travelButtonClicked = () => {
-      const userId = localStorage.getItem('userId');
-      if(!userId) {
-        setNewUserModalOpen(true);
-      }
-      else {
-          setNewTriprModalOpen(true);
-      }
-  }
+    if (!props.appState.currentUserId) {
+      props.setAppState({ ...props.appState, newUserModalIsOpen: true });
+    } else {
+      props.setAppState({ ...props.appState, newTripModalIsOpen: true });
+    }
+  };
 
   return (
     <div className="App">
-      <Button onClickHandler={travelButtonClicked }>Travel</Button>
+      <Button onClickHandler={travelButtonClicked}>Travel</Button>
       <VerticalSpace />
-      <Button onClickHandler={() => props.history.push("/manage")}>
-        Manage
-      </Button>
-      <NewUserModal
-        open={newUserModalOpen}
-        setOpen={setNewUserModalOpen}
-        setUserData={setUserData}
-        openNextModal={() => setNewTriprModalOpen(true)}
-        setIsBusy={props.setIsBusy}
-        setError={setErrorModalIsOpen}
-      />
-      <NewTripModal
-        open={newTripModalOpen}
-        setOpen={setNewTriprModalOpen}
-        setIsBusy={props.setIsBusy}
-        setError={setErrorModalIsOpen}
-      />
-      <ErrorModal
-        show={errorModalIsOpen}
-        setOpen={setErrorModalIsOpen}
-      />
+      <Button onClickHandler={() => props.history.push("/trips")}>Discover</Button>
+      <VerticalSpace />
+      <Button onClickHandler={() => props.history.push("/manage")}>Manage</Button>
+      {props.appState.newUserModalIsOpen && <NewUserModal appState={props.appState} setAppState={props.setAppState} />}
+      {props.appState.newTripModalIsOpen && <NewTripModal appState={props.appState} setAppState={props.setAppState} />}
+      <ErrorModal appState={props.appState} setAppState={props.setAppState} />
     </div>
   );
 };

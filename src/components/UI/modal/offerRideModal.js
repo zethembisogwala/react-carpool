@@ -16,7 +16,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const OfferRideModal = (props) => {
   const [userToOffer, setUserToOffer] = useState({});
   useEffect(() => {
-    props.setIsBusy(true);
+    props.setAppState({ ...props.appState, isBusy: true });
     if (props.selectedTrip) {
       axios
         .get(
@@ -24,11 +24,11 @@ const OfferRideModal = (props) => {
         )
         .then((response) => {
           setUserToOffer(response.data);
-          props.setIsBusy(false);
+          props.setAppState({ ...props.appState, isBusy: false });
         })
         .catch((error) => {
           console.log(error);
-          props.setIsBusy(false);
+          props.setAppState({ ...props.appState, isBusy: false, error: true });
         });
     }
   }, [props.selectedTrip]);
@@ -38,17 +38,18 @@ const OfferRideModal = (props) => {
   };
 
   const onConfirmClicked = () => {
+    props.setAppState({ ...props.appState, isBusy: true });
     props.setOpen(false);
-    props.setIsBusy(true);
     axios
       .post("https://janev-2e278.firebaseio.com/rideOffers.json", {
         ...props.selectedTrip,
-        offererId: localStorage.getItem("userId"),
+        offererId: props.appState.currentUserId,
       })
       .then((response) => {
-        props.setIsBusy(false);
+        props.setAppState({ ...props.appState, isBusy: false });
       })
       .catch((error) => {
+        props.setAppState({ ...props.appState, isBusy: false, error: true });
         console.log(error);
       });
   };
