@@ -10,16 +10,21 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import axios from "axios";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const Modal = (props) => {
+  const userId = localStorage.getItem('userId');
   const [tripData, setTripData] = useState({
     from: "",
     to: "",
     isDriver: false,
+    userId: userId,
+    date: Date.now(),
+    valid: false
   });
   let actionButtonText = "rides";
   if (tripData.isDriver) {
@@ -31,11 +36,11 @@ const Modal = (props) => {
   };
 
   const setFrom = (e) => {
-    setTripData({ ...tripData, from: e.target.value });
+    setTripData({ ...tripData, from: e.target.value, valid: tripData.to !== '' });
   };
 
   const setTo = (e) => {
-    setTripData({ ...tripData, to: e.target.value });
+    setTripData({ ...tripData, to: e.target.value, valid: tripData.from !== '' });
   };
 
   const setDriver = () => {
@@ -45,10 +50,22 @@ const Modal = (props) => {
   const handleActionButtonClicked = () => {
     props.setIsBusy(true);
     props.setOpen(false);
-    setTimeout(() => {
-      props.setIsBusy(false);
-      props.history.push("/trips");
-    }, 500);
+
+    if(tripData.valid) {
+      axios
+      .post("https://janev-2e278.firebaseio.com/trips.json", tripData)
+      .then((response) => {
+        props.setIsBusy(false);
+        props.history.push("/trips");
+      })
+      .catch((error) => {
+        props.setIsBusy(false);
+        props.setError(true);
+      });
+    }
+    else {
+      return;
+    }
   };
 
   return (
@@ -95,7 +112,7 @@ const Modal = (props) => {
             />
           </p>
         </DialogContent>
-        <DialogActions style={{padding: 18}}>
+        <DialogActions style={{ padding: 18 }}>
           <Button onClickHandler={handleClose} color="primary">
             Cancel
           </Button>

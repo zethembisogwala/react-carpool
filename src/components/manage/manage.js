@@ -10,10 +10,10 @@ const Manage = (props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   return (
     <div className='Manage'>
-      <SimpleTabs open={modalIsOpen} setOpen={setModalIsOpen} />
+      <SimpleTabs setIsBusy={props.setIsBusy} open={modalIsOpen} setOpen={setModalIsOpen} />
       <OfferRideModal open={modalIsOpen} setOpen={setModalIsOpen} />
     </div>
   );
 };
 
-export default withRouter(Manage);
+export default React.memo(withRouter(Manage));
