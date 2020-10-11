@@ -63,7 +63,7 @@ const Trip = (props) => {
           color="textSecondary"
           gutterBottom
         >
-          {fullName}
+          { fullName }
         </Typography>
         <Typography variant="h5" component="h2">
           {props.trip.from} {bull} {props.trip.to}
