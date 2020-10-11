@@ -19,12 +19,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const Modal = (props) => {
   const userId = localStorage.getItem('userId');
   const [tripData, setTripData] = useState({
-    from: "",
-    to: "",
-    isDriver: false,
-    userId: userId,
+    from: '',
+    to: '',
     date: Date.now(),
-    valid: false
+    isDriver: false,
+    userId: localStorage.getItem('userId'),
+    valid: false,
+    offers: [],
+    requests: []
   });
   let actionButtonText = "rides";
   if (tripData.isDriver) {

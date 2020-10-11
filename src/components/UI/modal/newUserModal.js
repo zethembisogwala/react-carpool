@@ -28,6 +28,7 @@ const NewUserModal = (props) => {
       axios
         .post("https://janev-2e278.firebaseio.com/users.json", userData)
         .then((response) => {
+            console.log(response)
           localStorage.setItem("userId", response.data.name);
           props.setIsBusy(false);
           props.openNextModal();

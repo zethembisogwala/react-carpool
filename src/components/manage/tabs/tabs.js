@@ -56,17 +56,20 @@ export const SimpleTabs = React.memo( (props) => {
     const classes = useStyles();
     const [value, setValue] = useState(0);
     const [trips, setTrips] = useState([]);
+    const userId = localStorage.getItem('userId');
   
-    useEffect(() => {
-      props.setIsBusy(true);
-      axios
-        .get("https://janev-2e278.firebaseio.com/trips.json")
-        .then((response) => {
-          setTrips(objectToList(response.data));
-          props.setIsBusy(false);
-        })
-        .catch((error) => console.log(error));
-    }, []);
+    if(userId) {
+        useEffect(() => {
+            props.setIsBusy(true);
+            axios
+              .get("https://janev-2e278.firebaseio.com/trips.json")
+              .then((response) => {
+                setTrips(objectToList(response.data).filter(trip => trip.userId === userId));
+                props.setIsBusy(false);
+              })
+              .catch((error) => console.log(error));
+          }, []);
+    }
   
     const handleChange = (event, newValue) => {
       setValue(newValue);

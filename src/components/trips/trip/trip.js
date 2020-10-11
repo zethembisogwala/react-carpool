@@ -47,7 +47,12 @@ const Trip = (props) => {
   const userId = localStorage.getItem('userId');
   let fullName = '';
   if(users.length > 0) {
-      fullName = users.find(user => user.id === userId).fullName;
+      fullName = users.find(user => user.id === props.trip.userId).fullName;
+  }
+
+  const offerRide = () => {
+    props.setSelectedTrip(props.trip);
+    props.setOfferModalOpen(true);
   }
 
   return (
@@ -68,7 +73,7 @@ const Trip = (props) => {
         </Typography>
       </CardContent>
       <CardActions className="CardActions">
-        <Button onClickHandler={() => props.setOpen(true)} size="small">
+        <Button onClickHandler={offerRide} size="small">
           Offer ride
         </Button>
       </CardActions>

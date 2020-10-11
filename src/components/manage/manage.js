@@ -11,7 +11,6 @@ const Manage = (props) => {
   return (
     <div className='Manage'>
       <SimpleTabs setIsBusy={props.setIsBusy} open={modalIsOpen} setOpen={setModalIsOpen} />
-      <OfferRideModal open={modalIsOpen} setOpen={setModalIsOpen} />
     </div>
   );
 };
