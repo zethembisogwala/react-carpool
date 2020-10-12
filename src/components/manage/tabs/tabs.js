@@ -10,7 +10,7 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Trip from "../../trips/trip/trip";
-import { objectToList } from '../../../helpers/functions';
+import { objectToList } from "../../../helpers/functions";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -52,71 +52,81 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SimpleTabs = React.memo( (props) => {
-    const classes = useStyles();
-    const [value, setValue] = useState(0);
-    const [trips, setTrips] = useState([]);
-  
-    if(props.appState.currentUserId) {
-        useEffect(() => {
-            props.setAppState({ ...props.appState, isBusy: true });
-            axios
-              .get("https://janev-2e278.firebaseio.com/trips.json")
-              .then((response) => {
-                setTrips(objectToList(response.data).filter(trip => trip.userId === props.appState.currentUserId));
-                props.setAppState({ ...props.appState, isBusy: false });
-              })
-              .catch((error) => {
-                props.setAppState({ ...props.appState, isBusy: false, error: true });
-              });
-          }, []);
-    }
-  
-    const handleChange = (event, newValue) => {
-      setValue(newValue);
-    };
-  
-    return (
-      <div className={classes.root}>
-        <AppBar
-          position="static"
-          style={{
-            backgroundColor: "grey",
-            color: "black",
-            alignItems: "center",
-          }}
-          className="Bar"
+export const SimpleTabs = React.memo((props) => {
+  const classes = useStyles();
+  const [value, setValue] = useState(0);
+  const [trips, setTrips] = useState([]);
+
+  if (props.appState.currentUserId) {
+    useEffect(() => {
+      props.setAppState({ ...props.appState, isBusy: true });
+      axios
+        .get("https://janev-2e278.firebaseio.com/trips.json")
+        .then((response) => {
+          setTrips(
+            objectToList(response.data).filter(
+              (trip) => trip.userId === props.appState.currentUserId
+            )
+          );
+          props.setAppState({ ...props.appState, isBusy: false });
+        })
+        .catch((error) => {
+          props.setAppState({ ...props.appState, isBusy: false, error: true });
+        });
+    }, []);
+  }
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  let availableTrips = trips.map((trip) => (
+    <div className="ManageTabs">
+      <Trip
+        key={trip.id}
+        trip={trip}
+        setOpen={props.setOpen}
+        setAppState={props.setAppState}
+        appState={props.appState}
+      />
+    </div>
+  ));
+
+  if (trips.length < 1) {
+    availableTrips = <p className="Layout">No trips to display.</p>
+  }
+
+  return (
+    <div className={classes.root}>
+      <AppBar
+        position="static"
+        style={{
+          backgroundColor: "grey",
+          color: "black",
+          alignItems: "center",
+        }}
+        className="Bar"
+      >
+        <Tabs
+          TabIndicatorProps={{ style: { background: "black" } }}
+          value={value}
+          onChange={handleChange}
+          aria-label="simple tabs example"
         >
-          <Tabs
-            TabIndicatorProps={{ style: { background: "black" } }}
-            value={value}
-            onChange={handleChange}
-            aria-label="simple tabs example"
-          >
-            <Tab label="Trips" {...a11yProps(0)} />
-            <Tab label="Requests" {...a11yProps(1)} />
-            <Tab label="Offers" {...a11yProps(2)} />
-          </Tabs>
-        </AppBar>
-        <TabPanel value={value} index={0}>
-          {trips.map((trip) => (
-            <div className="ManageTabs">
-              <Trip
-                key={trip.id}
-                trip={trip}
-                setOpen={props.setOpen}
-                setAppState={props.setAppState}
-                appState={props.appState}
-              />
-            </div>
-          ))}
-        </TabPanel>
-        <TabPanel className='Layout' value={value} index={1}>
-          No requests to show
-        </TabPanel>
-        <TabPanel className='Layout' value={value} index={2}>
-          No offers to show
-        </TabPanel>
-      </div>
-    );
-  });
+          <Tab label="Trips" {...a11yProps(0)} />
+          <Tab label="Requests" {...a11yProps(1)} />
+          <Tab label="Offers" {...a11yProps(2)} />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={value} index={0}>
+        {availableTrips}
+      </TabPanel>
+      <TabPanel className="Layout" value={value} index={1}>
+        No requests to show
+      </TabPanel>
+      <TabPanel className="Layout" value={value} index={2}>
+        No offers to show
+      </TabPanel>
+    </div>
+  );
+});

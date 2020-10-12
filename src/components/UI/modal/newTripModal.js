@@ -34,57 +34,70 @@ const Modal = (props) => {
   }
 
   const handleClose = () => {
-    props.setAppState({ ...props.appState, newTripModalIsOpen: false });
+    props.setAppState(prevState => {
+      return { ...prevState, newTripModalIsOpen: false }
+    });
   };
 
   const setFrom = (e) => {
-    setTripData(prevData  => {
-      return {
-        ...prevData,
-        from: e.target.value,
-        valid: prevData.to !== "",
-      }
-    });
+    if (e.target.value) {
+      const from = e.target.value;
+      setTripData((prevData) => {
+        return {
+          ...prevData,
+          from: from,
+          valid: prevData.to !== "",
+        };
+      });
+    }
   };
 
   const setTo = (e) => {
-    setTripData(prevData => {
-      return {
-        ...prevData,
-        to: e.target.value,
-        valid: prevData.from !== "",
-      }
-    });
+    if (e.target.value) {
+      const to = e.target.value;
+      setTripData((prevData) => {
+        return {
+          ...prevData,
+          to: to,
+          valid: prevData.from !== "",
+        };
+      });
+    }
   };
 
   const setDriver = () => {
-    setTripData(prevData => {
-      return { ...prevData, isDriver: !prevData.isDriver }
+    setTripData((prevData) => {
+      return { ...prevData, isDriver: !prevData.isDriver };
     });
   };
 
   const handleActionButtonClicked = () => {
-    props.setAppState(prevState => {
+    props.setAppState((prevState) => {
       return {
         ...prevState,
         newTripModalIsOpen: false,
         isBusy: true,
-      }
+      };
     });
 
     if (tripData.valid && tripData.userId) {
       axios
         .post("https://janev-2e278.firebaseio.com/trips.json", tripData)
         .then((response) => {
-          props.setAppState({ ...props.appState, isBusy: false });
+          props.setAppState(prevState => {
+            return { ...prevState, isBusy: false }
+          });
           props.history.push("/trips");
         })
         .catch((error) => {
-          props.setAppState({ ...props.appState, isBusy: false, error: true });
+          props.setAppState(prevState => {
+            return { ...prevState, isBusy: false, error: true }
+          });
         });
     } else {
-      props.setAppState({ ...props.appState, error: true });
-      return;
+      props.setAppState(prevState => {
+        return { ...prevState, error: true }
+      });
     }
   };
 
@@ -136,7 +149,9 @@ const Modal = (props) => {
             Cancel
           </Button>
           <Button onClickHandler={handleActionButtonClicked} color="primary">
-            Find {actionButtonText}
+            {props.location.pathname === "/trips"
+              ? "Continue"
+              : `Find ${actionButtonText}`}
           </Button>
         </DialogActions>
       </Dialog>

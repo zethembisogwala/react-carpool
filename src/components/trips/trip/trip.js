@@ -44,15 +44,43 @@ const Trip = (props) => {
   }, [props.trip]);
   const classes = useStyles();
   const bull = <span className={classes.bullet}>•</span>;
-  let fullName = '';
-  if(users.length > 0) {
-      fullName = users.find(user => user.id === props.trip.userId).fullName;
+  let fullName = "";
+  if (users.length > 0) {
+    fullName = users.find((user) => user.id === props.trip.userId).fullName;
   }
 
   const offerRide = () => {
     props.setSelectedTrip(props.trip);
     props.setOfferModalOpen(true);
-  }
+  };
+
+  const requestRide = () => {
+    props.setSelectedTrip(props.trip);
+    if (props.appState.currentUserId) {
+      props.setRequestModalOpen(true);
+    }
+    else {
+        console.log('No')
+        props.setAppState(prevState => {
+            return {
+                ...prevState,
+                newUserModalIsOpen: true
+            }
+        })
+    }
+  };
+
+  const offerRideButton = (
+    <Button onClickHandler={offerRide} size="small">
+      Offer ride
+    </Button>
+  );
+
+  const requestRideButton = (
+    <Button onClickHandler={requestRide} size="small">
+      Request ride
+    </Button>
+  );
 
   return (
     <Card className={[classes.root, "Trip"].join(" ")}>
@@ -62,7 +90,7 @@ const Trip = (props) => {
           color="textSecondary"
           gutterBottom
         >
-          { fullName }
+          {fullName}
         </Typography>
         <Typography variant="h5" component="h2">
           {props.trip.from} {bull} {props.trip.to}
@@ -72,9 +100,7 @@ const Trip = (props) => {
         </Typography>
       </CardContent>
       <CardActions className="CardActions">
-        <Button onClickHandler={offerRide} size="small">
-          Offer ride
-        </Button>
+        {props.appState.isDriving ? offerRideButton : requestRideButton}
       </CardActions>
     </Card>
   );

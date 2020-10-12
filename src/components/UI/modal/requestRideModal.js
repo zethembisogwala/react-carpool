@@ -13,8 +13,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const OfferRideModal = (props) => {
-  const [userToOffer, setUserToOffer] = useState({});
+const RequestRideModal = (props) => {
+  const [userToRequestFrom, setUserToRequestFrom] = useState({});
   useEffect(() => {
     props.setAppState({ ...props.appState, isBusy: true });
     if (props.selectedTrip) {
@@ -23,7 +23,7 @@ const OfferRideModal = (props) => {
           `https://janev-2e278.firebaseio.com/users/${props.selectedTrip.userId}.json`
         )
         .then((response) => {
-          setUserToOffer(response.data);
+          setUserToRequestFrom(response.data);
           props.setAppState({ ...props.appState, isBusy: false });
         })
         .catch((error) => {
@@ -38,24 +38,18 @@ const OfferRideModal = (props) => {
   };
 
   const onConfirmClicked = () => {
-    props.setAppState(prevState => {
-        return { ...props.appState, isBusy: true }
-    });
+    props.setAppState({ ...props.appState, isBusy: true });
     props.setOpen(false);
     axios
-      .post("https://janev-2e278.firebaseio.com/rideOffers.json", {
+      .post("https://janev-2e278.firebaseio.com/rideRequests.json", {
         ...props.selectedTrip,
-        offererId: props.appState.currentUserId,
+        requestorId: props.appState.currentUserId,
       })
       .then((response) => {
-        props.setAppState(prevState => {
-            return { ...props.appState, isBusy: false }
-        });
+        props.setAppState({ ...props.appState, isBusy: false });
       })
       .catch((error) => {
-        props.setAppState(prevState => {
-            return { ...props.appState, isBusy: false, error: true }
-        });
+        props.setAppState({ ...props.appState, isBusy: false, error: true });
         console.log(error);
       });
   };
@@ -71,11 +65,11 @@ const OfferRideModal = (props) => {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle id="alert-dialog-slide-title">
-          {`Do you want to offer a ride to ${userToOffer.fullName}?`}
+          {`Do you want to request a ride from ${userToRequestFrom.fullName}?`}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            {userToOffer.fullName} will get a message that you want to ride with
+            {userToRequestFrom.fullName} will get a message that you want to ride with
             them
           </DialogContentText>
         </DialogContent>
@@ -92,4 +86,4 @@ const OfferRideModal = (props) => {
   );
 };
 
-export default OfferRideModal;
+export default RequestRideModal;

@@ -8,22 +8,30 @@ import axios from "axios";
 import { objectToList } from "../../helpers/functions";
 
 import "./trips.css";
+import RequestRideModal from "../UI/modal/requestRideModal";
 
 const Trips = (props) => {
   const [offerModalOpen, setOfferModalOpen] = useState(false);
+  const [requestModalOpen, setRequesModalOpen] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [trips, setTrips] = useState([]);
 
   useEffect(() => {
-    props.setAppState({ ...props.appState, isBusy: true });
+    props.setAppState((prevState) => {
+      return { ...prevState, isBusy: true };
+    });
     axios
       .get("https://janev-2e278.firebaseio.com/trips.json")
       .then((response) => {
         setTrips(objectToList(response.data));
-        props.setAppState({ ...props.appState, isBusy: false });
+        props.setAppState((prevState) => {
+          return { ...prevState, isBusy: false };
+        });
       })
       .catch((error) => {
-        props.setAppState({ ...props.appState, error: true });
+        props.setAppState(prevState => {
+            return { ...prevState, error: true }
+        });
       });
   }, []);
 
@@ -35,6 +43,7 @@ const Trips = (props) => {
         selectedTrip={selectedTrip}
         setSelectedTrip={setSelectedTrip}
         setOfferModalOpen={setOfferModalOpen}
+        setRequestModalOpen={setRequesModalOpen}
         appState={props.appState}
         setAppState={props.setAppState}
       />
@@ -53,7 +62,7 @@ const Trips = (props) => {
     <div className="Trips">
       <VerticalSpace />
       {tripList}
-      {selectedTrip && (
+      {selectedTrip && props.appState.isDriving && (
         <OfferRideModal
           setSelectedTrip={onSetSelectedTrip}
           selectedTrip={selectedTrip}
@@ -61,6 +70,16 @@ const Trips = (props) => {
           setAppState={props.setAppState}
           open={offerModalOpen}
           setOpen={setOfferModalOpen}
+        />
+      )}
+      {selectedTrip && !props.appState.isDriving && (
+        <RequestRideModal
+          setSelectedTrip={onSetSelectedTrip}
+          selectedTrip={selectedTrip}
+          appState={props.appState}
+          setAppState={props.setAppState}
+          open={requestModalOpen}
+          setOpen={setRequesModalOpen}
         />
       )}
     </div>

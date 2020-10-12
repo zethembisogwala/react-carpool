@@ -36,6 +36,7 @@ const NewUserModal = (props) => {
               return {
                 ...prevState,
                 currentUserId: response.data.name,
+                isDriving: userData.isDriving,
                 isBusy: false,
                 newUserModalIsOpen: false,
                 newTripModalIsOpen: true,
