@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
+import * as actionCreators from "../../../store/actions/actionCreators";
+
 import Button from "../button/button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -18,51 +21,35 @@ const NewUserModal = (props) => {
   const [userData, setUserData] = useState({ fullName: "", phoneNumber: "" });
 
   const handleClose = () => {
-    props.setAppState({ ...props.appState, newUserModalIsOpen: false });
+    props.setNewUserModalIsOpen(false);
   };
 
   const onContinueClicked = () => {
-    props.setAppState({
-      ...props.appState,
-      newUserModalIsOpen: false,
-      isBusy: true,
-    });
     if (userData.fullName.length > 0 && userData.phoneNumber.length > 0) {
-      axios
-        .post("https://janev-2e278.firebaseio.com/users.json", userData)
-        .then((response) => {
-          localStorage.setItem("userId", response.data.name);
-          props.setAppState(prevState => {
-              return {
-                ...prevState,
-                currentUserId: response.data.name,
-                isDriving: userData.isDriving,
-                isBusy: false,
-                newUserModalIsOpen: false,
-                newTripModalIsOpen: true,
-              }
-          });
-        })
-        .catch((error) => {
-          props.setAppState({ ...props.appState, error: true, isBusy: false });
-        });
+      props.postNewUser(userData);
     } else {
       console.log(props.appState);
-      props.setAppState({ ...props.appState, error: true });
+      props.setError("Invalid full name or phone number");
     }
   };
 
-  const onFullNameChanged = (event) => {
-    setUserData({ ...userData, fullName: event.target.value });
+  const onFullNameChanged = (e) => {
+    const fullName = e.target.value.trim();
+    setUserData((prevUserData) => {
+      return { ...prevUserData, fullName: fullName };
+    });
   };
 
-  const onPhoneNumberChanged = (event) => {
-    setUserData({ ...userData, phoneNumber: event.target.value });
+  const onPhoneNumberChanged = (e) => {
+    const phoneNumber = e.target.value.trim();
+    setUserData((prevUserData) => {
+      return { ...prevUserData, phoneNumber: phoneNumber };
+    });
   };
   return (
     <div>
       <Dialog
-        open={props.appState.newUserModalIsOpen}
+        open={props.newUserModalIsOpen}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
@@ -108,4 +95,18 @@ const NewUserModal = (props) => {
   );
 };
 
-export default NewUserModal;
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setNewUserModalIsOpen: (open) =>
+      dispatch(actionCreators.setNewUserModalIsOpen(open)),
+    postNewUser: (userData) =>
+      dispatch(actionCreators.postNewUserStart(userData)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(NewUserModal);

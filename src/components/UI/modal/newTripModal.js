@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import * as actionCreators from "../../../store/actions/actionCreators";
+
 import Button from "../button/button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -17,31 +20,29 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const Modal = (props) => {
-  const userId = props.appState.currentUserId;
   const [tripData, setTripData] = useState({
     from: "",
     to: "",
     date: Date.now(),
     isDriver: false,
-    userId: `${userId}`,
+    userId: `${props.currentUserId}`,
     valid: false,
     offers: [],
     requests: [],
   });
+
   let actionButtonText = "rides";
   if (tripData.isDriver) {
     actionButtonText = "people";
   }
 
   const handleClose = () => {
-    props.setAppState(prevState => {
-      return { ...prevState, newTripModalIsOpen: false }
-    });
+    props.setNewTripModalIsOpen(false);
   };
 
   const setFrom = (e) => {
     if (e.target.value) {
-      const from = e.target.value;
+      const from = e.target.value.trim();
       setTripData((prevData) => {
         return {
           ...prevData,
@@ -54,7 +55,7 @@ const Modal = (props) => {
 
   const setTo = (e) => {
     if (e.target.value) {
-      const to = e.target.value;
+      const to = e.target.value.trim();
       setTripData((prevData) => {
         return {
           ...prevData,
@@ -72,39 +73,18 @@ const Modal = (props) => {
   };
 
   const handleActionButtonClicked = () => {
-    props.setAppState((prevState) => {
-      return {
-        ...prevState,
-        newTripModalIsOpen: false,
-        isBusy: true,
-      };
-    });
-
     if (tripData.valid && tripData.userId) {
-      axios
-        .post("https://janev-2e278.firebaseio.com/trips.json", tripData)
-        .then((response) => {
-          props.setAppState(prevState => {
-            return { ...prevState, isBusy: false }
-          });
-          props.history.push("/trips");
-        })
-        .catch((error) => {
-          props.setAppState(prevState => {
-            return { ...prevState, isBusy: false, error: true }
-          });
-        });
+      props.postNewTrip(tripData);
+      props.history.push("/trips");
     } else {
-      props.setAppState(prevState => {
-        return { ...prevState, error: true }
-      });
+      console.log("Error passing userId");
     }
   };
 
   return (
     <div>
       <Dialog
-        open={props.appState.newTripModalIsOpen}
+        open={props.newTripModalIsOpen}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
@@ -159,4 +139,19 @@ const Modal = (props) => {
   );
 };
 
-export default withRouter(Modal);
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setNewTripModalIsOpen: (open) =>
+      dispatch(actionCreators.setNewTripModalIsOpen(open)),
+    postNewTrip: (tripData) =>
+      dispatch(actionCreators.postNewTripStart(tripData)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Modal));

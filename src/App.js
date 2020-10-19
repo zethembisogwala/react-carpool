@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Route, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+
 import NewTripModal from "./components/UI/modal/newTripModal";
 import NewUserModal from "./components/UI/modal/newUserModal";
 
@@ -11,19 +13,9 @@ import NavBar from "./components/UI/navbar/navbar";
 import Trips from "./components/trips/trips";
 import "./App.css";
 import Spinner from "./components/UI/spinner/spinner";
+import Snackbar from "./components/UI/snackbar/snackbar";
 
 const App = (props) => {
-  const [isBusy, setIsBusy] = useState(false);
-  const [appState, setAppState] = useState({
-    error: false,
-    isBusy: false,
-    currentUserId: localStorage.getItem("userId"),
-    isDriving: null,
-    newUserModalIsOpen: false,
-    newTripModalIsOpen: false,
-    errorModalIsOpen: false,
-  });
-
   let navbar = <NavBar />;
 
   if (props.history.location.pathname === "/") {
@@ -33,31 +25,22 @@ const App = (props) => {
   return (
     <React.Fragment>
       {navbar}
-      <Route
-        exact
-        path="/"
-        render={() => <Home appState={appState} setAppState={setAppState} />}
-      />
-      <Route
-        exact
-        path="/manage"
-        render={() => <Manage appState={appState} setAppState={setAppState} />}
-      />
-      <Route
-        exact
-        path="/trips"
-        render={() => <Trips appState={appState} setAppState={setAppState} />}
-      />
-      <Spinner isBusy={appState.isBusy} />
-      {appState.newUserModalIsOpen && (
-        <NewUserModal appState={appState} setAppState={setAppState} />
-      )}
-      {appState.newTripModalIsOpen && (
-        <NewTripModal appState={appState} setAppState={setAppState} />
-      )}
-      <ErrorModal appState={appState} setAppState={setAppState} />
+      <Route exact path="/" render={() => <Home />} />
+      <Route exact path="/manage" render={() => <Manage />} />
+      <Route exact path="/trips" render={() => <Trips />} />
+      <Spinner />
+      {props.newUserModalIsOpen && <NewUserModal />}
+      {props.newTripModalIsOpen && <NewTripModal />}
+      {props.error && <ErrorModal />}
+      {props.snackbarIsOpen && <Snackbar />}
     </React.Fragment>
   );
 };
 
-export default withRouter(App);
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+export default connect(mapStateToProps)(withRouter(App));

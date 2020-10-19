@@ -1,20 +1,19 @@
-
 import React, { useState } from "react";
 import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import * as actionCreators from '../../store/actions/actionCreators';
 
 import Button from "../UI/button/button";
 import VerticalSpace from "../UI/verticalSpace/verticalSpace";
 
 const Home = (props) => {
   const travelButtonClicked = () => {
-    if (!props.appState.currentUserId) {
-      props.setAppState(prevState => {
-          return { ...prevState, newUserModalIsOpen: true }
-      });
-    } else {
-      props.setAppState(prevState => {
-          return { prevState, newTripModalIsOpen: true }
-      });
+    console.log(props)
+    if(props.currentUserId) {
+      props.openNewTripModal();
+    }
+    else {
+      props.openNewUserModal();
     }
   };
 
@@ -22,11 +21,28 @@ const Home = (props) => {
     <div className="App">
       <Button onClickHandler={travelButtonClicked}>Travel</Button>
       <VerticalSpace />
-      <Button onClickHandler={() => props.history.push("/trips")}>Discover</Button>
+      <Button onClickHandler={() => props.history.push("/trips")}>
+        Discover
+      </Button>
       <VerticalSpace />
-      <Button onClickHandler={() => props.history.push("/manage")}>Manage</Button>
+      <Button onClickHandler={() => props.history.push("/manage")}>
+        Manage
+      </Button>
     </div>
   );
 };
 
-export default withRouter(Home);
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNewUserModal: () => dispatch(actionCreators.setNewUserModalIsOpen(true)),
+    openNewTripModal: () => dispatch(actionCreators.setNewTripModalIsOpen(true)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Home));

@@ -1,5 +1,6 @@
 import React from "react";
 import "./spinner.css";
+import { connect } from 'react-redux';
 
 const Spinner = (props) => {
   let style = null;
@@ -9,4 +10,10 @@ const Spinner = (props) => {
   return <div style={style} id="cover-spin"></div>;
 };
 
-export default Spinner;
+const mapStateToProps = (state) => {
+  return {
+    ...state
+  }
+}
+
+export default connect(mapStateToProps)(Spinner);

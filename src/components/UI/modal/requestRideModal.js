@@ -15,41 +15,22 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const RequestRideModal = (props) => {
   const [userToRequestFrom, setUserToRequestFrom] = useState({});
-  useEffect(() => {
-    props.setAppState({ ...props.appState, isBusy: true });
-    if (props.selectedTrip) {
-      axios
-        .get(
-          `https://janev-2e278.firebaseio.com/users/${props.selectedTrip.userId}.json`
-        )
-        .then((response) => {
-          setUserToRequestFrom(response.data);
-          props.setAppState({ ...props.appState, isBusy: false });
-        })
-        .catch((error) => {
-          console.log(error);
-          props.setAppState({ ...props.appState, isBusy: false, error: true });
-        });
-    }
-  }, [props.selectedTrip]);
 
   const handleClose = () => {
     props.setOpen(false);
   };
 
   const onConfirmClicked = () => {
-    props.setAppState({ ...props.appState, isBusy: true });
-    props.setOpen(false);
     axios
       .post("https://janev-2e278.firebaseio.com/rideRequests.json", {
         ...props.selectedTrip,
-        requestorId: props.appState.currentUserId,
+        requestorId: props.currentUserId,
       })
       .then((response) => {
-        props.setAppState({ ...props.appState, isBusy: false });
+        
       })
       .catch((error) => {
-        props.setAppState({ ...props.appState, isBusy: false, error: true });
+        
         console.log(error);
       });
   };

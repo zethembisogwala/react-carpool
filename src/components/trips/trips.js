@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import * as actionCreators from '../../store/actions/actionCreators';
+
 import Trip from "./trip/trip";
 import VerticalSpace from "../UI/verticalSpace/verticalSpace";
 import OfferRideModal from "../UI/modal/offerRideModal";
-import axios from "axios";
-
-import { objectToList } from "../../helpers/functions";
 
 import "./trips.css";
 import RequestRideModal from "../UI/modal/requestRideModal";
@@ -17,25 +17,15 @@ const Trips = (props) => {
   const [trips, setTrips] = useState([]);
 
   useEffect(() => {
-    props.setAppState((prevState) => {
-      return { ...prevState, isBusy: true };
-    });
-    axios
-      .get("https://janev-2e278.firebaseio.com/trips.json")
-      .then((response) => {
-        setTrips(objectToList(response.data));
-        props.setAppState((prevState) => {
-          return { ...prevState, isBusy: false };
-        });
-      })
-      .catch((error) => {
-        props.setAppState(prevState => {
-            return { ...prevState, error: true }
-        });
-      });
+    props.fetchAllTrips();
+    props.fetchAllUsers();
   }, []);
 
-  const tripList = trips.map((trip) => {
+  if (props.trips === null || props.trips.length < 1) {
+    return <p className="Layout">No trips to display</p>;
+  }
+
+  const tripList = props.trips.map((trip) => {
     return (
       <Trip
         key={trip.id}
@@ -44,35 +34,28 @@ const Trips = (props) => {
         setSelectedTrip={setSelectedTrip}
         setOfferModalOpen={setOfferModalOpen}
         setRequestModalOpen={setRequesModalOpen}
-        appState={props.appState}
-        setAppState={props.setAppState}
       />
     );
   });
 
-  if (trips.length < 1) {
-    return <p className="Layout">No trips to display</p>;
-  }
-
   const onSetSelectedTrip = (set) => {
     setSelectedTrip(set);
   };
+  console.log(props.snackbarData)
 
   return (
     <div className="Trips">
       <VerticalSpace />
       {tripList}
-      {selectedTrip && props.appState.isDriving && (
+      {selectedTrip && props.isDriving && (
         <OfferRideModal
           setSelectedTrip={onSetSelectedTrip}
           selectedTrip={selectedTrip}
-          appState={props.appState}
-          setAppState={props.setAppState}
           open={offerModalOpen}
           setOpen={setOfferModalOpen}
         />
       )}
-      {selectedTrip && !props.appState.isDriving && (
+      {selectedTrip && !props.isDriving && (
         <RequestRideModal
           setSelectedTrip={onSetSelectedTrip}
           selectedTrip={selectedTrip}
@@ -86,4 +69,17 @@ const Trips = (props) => {
   );
 };
 
-export default React.memo(withRouter(Trips));
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchAllUsers: () => dispatch(actionCreators.fetchAllUsersStart()),
+    fetchAllTrips: () => dispatch(actionCreators.fetchAllTripsStart()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Trips));

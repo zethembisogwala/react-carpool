@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
-import { objectToList } from "../../../helpers/functions";
+import { connect } from "react-redux";
+import * as actionCreators from "../../../store/actions/actionCreators";
 
 import "./trip.css";
+import Icon from '@material-ui/core/Icon';
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -29,26 +30,18 @@ const useStyles = makeStyles({
 });
 
 const Trip = (props) => {
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    props.setAppState({ ...props.appState, isBusy: true });
-    axios
-      .get("https://janev-2e278.firebaseio.com/users.json")
-      .then((response) => {
-        setUsers(objectToList(response.data));
-        props.setAppState({ ...props.appState, isBusy: false });
-      })
-      .catch((error) => {
-        props.setAppState({ ...props.appState, isBusy: false, error: true });
-      });
-  }, [props.trip]);
   const classes = useStyles();
   const bull = <span className={classes.bullet}>•</span>;
-  let fullName = "";
-  if (users.length > 0) {
-    fullName = users.find((user) => user.id === props.trip.userId).fullName;
+
+  if (!props.users) {
+    return <div></div>;
   }
 
+  let fullName = "";
+  if (props.users !== null && props.users.length > 0) {
+    const user = props.users.find((user) => user.id === props.trip.userId);
+    fullName = user.fullName;
+  }
   const offerRide = () => {
     props.setSelectedTrip(props.trip);
     props.setOfferModalOpen(true);
@@ -56,17 +49,15 @@ const Trip = (props) => {
 
   const requestRide = () => {
     props.setSelectedTrip(props.trip);
-    if (props.appState.currentUserId) {
+    if (props.currentUserId) {
       props.setRequestModalOpen(true);
-    }
-    else {
-        console.log('No')
-        props.setAppState(prevState => {
-            return {
-                ...prevState,
-                newUserModalIsOpen: true
-            }
-        })
+    } else {
+      props.setAppState((prevState) => {
+        return {
+          ...prevState,
+          newUserModalIsOpen: true,
+        };
+      });
     }
   };
 
@@ -78,7 +69,7 @@ const Trip = (props) => {
 
   const requestRideButton = (
     <Button onClickHandler={requestRide} size="small">
-      Request ride
+      <Icon>star</Icon>Request ride
     </Button>
   );
 
@@ -100,10 +91,16 @@ const Trip = (props) => {
         </Typography>
       </CardContent>
       <CardActions className="CardActions">
-        {props.appState.isDriving ? offerRideButton : requestRideButton}
+        {props.trip.isDriver ? requestRideButton : offerRideButton}
       </CardActions>
     </Card>
   );
 };
 
-export default React.memo(Trip);
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+export default connect(mapStateToProps)(Trip);

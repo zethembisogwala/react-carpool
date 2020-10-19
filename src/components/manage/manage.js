@@ -10,8 +10,6 @@ const Manage = (props) => {
   return (
     <div className="Manage">
       <SimpleTabs
-        appState={props.appState}
-        setAppState={props.setAppState}
         open={modalIsOpen}
         setOpen={setModalIsOpen}
       />

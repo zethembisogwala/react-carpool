@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { connect } from 'react-redux';
 import "./tabs.css";
+
 
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
@@ -52,13 +54,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SimpleTabs = React.memo((props) => {
+
+const mapStateToProps = (state) => {
+  return {
+    ...state
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    
+  }
+}
+
+export const SimpleTabs = connect(mapStateToProps, mapDispatchToProps)((props) => {
   const classes = useStyles();
   const [value, setValue] = useState(0);
   const [trips, setTrips] = useState([]);
 
-  if (props.appState.currentUserId) {
+  if (!props.trips) {
     useEffect(() => {
+      props.fetchAllTrips
+       
       props.setAppState({ ...props.appState, isBusy: true });
       axios
         .get("https://janev-2e278.firebaseio.com/trips.json")
@@ -130,3 +147,4 @@ export const SimpleTabs = React.memo((props) => {
     </div>
   );
 });
+
