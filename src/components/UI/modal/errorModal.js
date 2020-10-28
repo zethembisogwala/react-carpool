@@ -24,7 +24,7 @@ const ErrorModal = (props) => {
   return (
     <div>
       <Dialog
-        open={props.error}
+        open={props.error !== false}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}

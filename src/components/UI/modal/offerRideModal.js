@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+
 import Button from "../button/button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -8,6 +10,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
 import axios from "axios";
+import * as actionCreators from "../../../store/actions/actionCreators";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -16,54 +19,23 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const OfferRideModal = (props) => {
   const [userToOffer, setUserToOffer] = useState({});
   useEffect(() => {
-    props.setAppState({ ...props.appState, isBusy: true });
     if (props.selectedTrip) {
-      axios
-        .get(
-          `https://janev-2e278.firebaseio.com/users/${props.selectedTrip.userId}.json`
-        )
-        .then((response) => {
-          setUserToOffer(response.data);
-          props.setAppState({ ...props.appState, isBusy: false });
-        })
-        .catch((error) => {
-          console.log(error);
-          props.setAppState({ ...props.appState, isBusy: false, error: true });
-        });
+      props.fetchUserToOffer(props.selectedTrip.userId);
     }
   }, [props.selectedTrip]);
 
   const handleClose = () => {
-    props.setOpen(false);
+    props.setOfferRideModalIsOpen(false);
   };
 
   const onConfirmClicked = () => {
-    props.setAppState(prevState => {
-        return { ...props.appState, isBusy: true }
-    });
-    props.setOpen(false);
-    axios
-      .post("https://janev-2e278.firebaseio.com/rideOffers.json", {
-        ...props.selectedTrip,
-        offererId: props.appState.currentUserId,
-      })
-      .then((response) => {
-        props.setAppState(prevState => {
-            return { ...props.appState, isBusy: false }
-        });
-      })
-      .catch((error) => {
-        props.setAppState(prevState => {
-            return { ...props.appState, isBusy: false, error: true }
-        });
-        console.log(error);
-      });
+    props.offerRide({ ...props.selectedTrip, offerorId: props.currentUserId });
   };
 
   return (
     <div>
       <Dialog
-        open={props.open}
+        open={props.offerRideModalIsOpen}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
@@ -92,4 +64,21 @@ const OfferRideModal = (props) => {
   );
 };
 
-export default OfferRideModal;
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setOfferRideModalIsOpen: (open) =>
+      dispatch(actionCreators.setOfferRideModalIsOpen(open)),
+    fetchUserToOffer: (id) =>
+      dispatch(actionCreators.fetchUserById(id, actionCreators.setUserToOffer)),
+    offerRide: (rideOffer) =>
+      dispatch(actionCreators.postRideOfferStart(rideOffer)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(OfferRideModal);

@@ -3,10 +3,15 @@ export const capitalize = (word) => {
 };
 
 export const objectToList = (object) => {
-  return Object.keys(object).map((key) => {
-    return {
-      id: key,
-      ...object[key],
-    };
-  });
+  if(object) {
+    return Object.keys(object).map((key) => {
+      return {
+        id: key,
+        ...object[key],
+      };
+    });
+  }
+  else {
+    return [];
+  }
 };

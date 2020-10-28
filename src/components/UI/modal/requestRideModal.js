@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+
+import * as actionCreators from "../../../store/actions///actionCreators";
 import Button from "../button/button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -14,57 +17,74 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const RequestRideModal = (props) => {
-  const [userToRequestFrom, setUserToRequestFrom] = useState({});
+  useEffect(() => {
+    if (props.selectedTrip) {
+      props.fetchUserToRequestFrom(props.selectedTrip.userId);
+    }
+  }, [props.selectedTrip]);
 
   const handleClose = () => {
-    props.setOpen(false);
+    props.setRequestRideModalIsOpen(false);
   };
 
   const onConfirmClicked = () => {
-    axios
-      .post("https://janev-2e278.firebaseio.com/rideRequests.json", {
-        ...props.selectedTrip,
-        requestorId: props.currentUserId,
-      })
-      .then((response) => {
-        
-      })
-      .catch((error) => {
-        
-        console.log(error);
-      });
+    props.requestRide({
+      ...props.selectedTrip,
+      requestorId: props.currentUserId,
+    });
   };
 
   return (
     <div>
-      <Dialog
-        open={props.open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle id="alert-dialog-slide-title">
-          {`Do you want to request a ride from ${userToRequestFrom.fullName}?`}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            {userToRequestFrom.fullName} will get a message that you want to ride with
-            them
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions style={{ padding: 18 }}>
-          <Button onClickHandler={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClickHandler={onConfirmClicked} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {props.userToRequestFrom && (
+        <Dialog
+          open={props.requestRideModalIsOpen}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle id="alert-dialog-slide-title">
+            {`Do you want to request a ride from ${props.userToRequestFrom.fullName}?`}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {props.userToRequestFrom.fullName} will get a message that you
+              want to ride with them
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions style={{ padding: 18 }}>
+            <Button onClickHandler={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClickHandler={onConfirmClicked} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </div>
   );
 };
 
-export default RequestRideModal;
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setRequestRideModalIsOpen: (open) =>
+      dispatch(actionCreators.setRequestRideModalIsOpen(open)),
+    fetchUserToRequestFrom: (id) =>
+      dispatch(
+        actionCreators.fetchUserById(id, actionCreators.setUserToRequestFrom)
+      ),
+    requestRide: (rideRequest) =>
+      dispatch(actionCreators.postRideRequestStart(rideRequest)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(RequestRideModal);

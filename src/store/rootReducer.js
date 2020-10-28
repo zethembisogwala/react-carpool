@@ -10,9 +10,15 @@ const initialState = {
   newTripModalIsOpen: false,
   errorModalIsOpen: false,
   trips: null,
+  myTrips: null,
   users: null,
   snackbarIsOpen: false,
   snackbarData: null,
+  selectedTrip: null,
+  offerRideModalIsOpen: false,
+  requestRideModalIsOpen: false,
+  userToRequestFrom: null,
+  userToOffer: null,
 };
 
 const reducer = (state = initialState, action) => {
@@ -44,7 +50,8 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isBusy: false,
-        newTripModalIsOpen: true,
+        newTripModalIsOpen: action.navigate,
+        currentUserId: action.id,
       };
     case actions.POST_NEW_USER_ERROR:
       return {
@@ -90,6 +97,39 @@ const reducer = (state = initialState, action) => {
         ...state,
         snackbarIsOpen: action.snackbarIsOpen,
         snackbarData: action.snackbarData,
+      };
+    case actions.FETCH_ALL_MY_TRIPS_SUCCESS:
+      return {
+        ...state,
+        myTrips: action.myTrips,
+        isBusy: false,
+      };
+
+    case actions.SET_SELECTED_TRIP:
+      return {
+        ...state,
+        selectedTrip: action.trip,
+      };
+    case actions.SET_OFFER_RIDE_MODAL_IS_OPEN:
+      return {
+        ...state,
+        offerRideModalIsOpen: action.open,
+      };
+    case actions.SET_REQUEST_RIDE_MODAL_IS_OPEN:
+      return {
+        ...state,
+        requestRideModalIsOpen: action.open,
+      };
+
+    case actions.SET_USER_TO_OFFER:
+      return {
+        ...state,
+        userToOffer: action.user,
+      };
+    case actions.SET_USER_TO_REQUEST_FROM:
+      return {
+        ...state,
+        userToRequestFrom: action.user,
       };
   }
 };

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actionCreators from "../../../store/actions/actionCreators";
 
@@ -26,7 +27,8 @@ const NewUserModal = (props) => {
 
   const onContinueClicked = () => {
     if (userData.fullName.length > 0 && userData.phoneNumber.length > 0) {
-      props.postNewUser(userData);
+      const path = props.location.pathname.substring(1, props.location.pathname.length);
+      props.postNewUser(userData, path);
     } else {
       console.log(props.appState);
       props.setError("Invalid full name or phone number");
@@ -105,8 +107,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setNewUserModalIsOpen: (open) =>
       dispatch(actionCreators.setNewUserModalIsOpen(open)),
-    postNewUser: (userData) =>
-      dispatch(actionCreators.postNewUserStart(userData)),
+    postNewUser: (userData, path) =>
+      dispatch(actionCreators.postNewUserStart(userData, path)),
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(NewUserModal);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(NewUserModal));

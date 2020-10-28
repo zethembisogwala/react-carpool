@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actionCreators from "../../../store/actions/actionCreators";
 
 import "./trip.css";
-import Icon from '@material-ui/core/Icon';
+import Icon from "@material-ui/core/Icon";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -44,20 +44,19 @@ const Trip = (props) => {
   }
   const offerRide = () => {
     props.setSelectedTrip(props.trip);
-    props.setOfferModalOpen(true);
+    if (props.currentUserId) {
+      props.setOfferRideModalIsOpen(true);
+    } else {
+      props.setNewUserModalIsOpen(true);
+    }
   };
 
   const requestRide = () => {
     props.setSelectedTrip(props.trip);
     if (props.currentUserId) {
-      props.setRequestModalOpen(true);
+      props.setRequestRideModalIsOpen(true);
     } else {
-      props.setAppState((prevState) => {
-        return {
-          ...prevState,
-          newUserModalIsOpen: true,
-        };
-      });
+      props.setNewUserModalIsOpen(true);
     }
   };
 
@@ -90,9 +89,11 @@ const Trip = (props) => {
           {props.trip.date}
         </Typography>
       </CardContent>
-      <CardActions className="CardActions">
-        {props.trip.isDriver ? requestRideButton : offerRideButton}
-      </CardActions>
+      {props.location.pathname === "/trips" && (
+        <CardActions className="CardActions">
+          {props.trip.isDriver ? requestRideButton : offerRideButton}
+        </CardActions>
+      )}
     </Card>
   );
 };
@@ -103,4 +104,16 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Trip);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setOfferRideModalIsOpen: (open) =>
+      dispatch(actionCreators.setOfferRideModalIsOpen(open)),
+    setRequestRideModalIsOpen: (open) =>
+      dispatch(actionCreators.setRequestRideModalIsOpen(open)),
+    setNewUserModalIsOpen: (open) =>
+      dispatch(actionCreators.setNewUserModalIsOpen(open)),
+    setSelectedTrip: (trip) => dispatch(actionCreators.setSelectedTrip(trip)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Trip));

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import "./tabs.css";
-
 
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Trip from "../../trips/trip/trip";
 import { objectToList } from "../../../helpers/functions";
+import { SignalCellularNull } from "@material-ui/icons";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -54,63 +54,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-const mapStateToProps = (state) => {
-  return {
-    ...state
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    
-  }
-}
-
-export const SimpleTabs = connect(mapStateToProps, mapDispatchToProps)((props) => {
+export const SimpleTabs = (props) => {
   const classes = useStyles();
   const [value, setValue] = useState(0);
-  const [trips, setTrips] = useState([]);
-
-  if (!props.trips) {
-    useEffect(() => {
-      props.fetchAllTrips
-       
-      props.setAppState({ ...props.appState, isBusy: true });
-      axios
-        .get("https://janev-2e278.firebaseio.com/trips.json")
-        .then((response) => {
-          setTrips(
-            objectToList(response.data).filter(
-              (trip) => trip.userId === props.appState.currentUserId
-            )
-          );
-          props.setAppState({ ...props.appState, isBusy: false });
-        })
-        .catch((error) => {
-          props.setAppState({ ...props.appState, isBusy: false, error: true });
-        });
-    }, []);
-  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  let availableTrips = trips.map((trip) => (
-    <div className="ManageTabs">
-      <Trip
-        key={trip.id}
-        trip={trip}
-        setOpen={props.setOpen}
-        setAppState={props.setAppState}
-        appState={props.appState}
-      />
-    </div>
-  ));
-
-  if (trips.length < 1) {
-    availableTrips = <p className="Layout">No trips to display.</p>
+  let availableTrips = <i className="Layout">No trips to display.</i>;
+  console.log(props.trips);
+  if (props.trips !== null) {
+    availableTrips = props.trips.map((trip) => (
+      <div className="ManageTabs">
+        <Trip
+          key={trip.id}
+          trip={trip}
+          setOpen={props.setOpen}
+          setAppState={props.setAppState}
+          appState={props.appState}
+        />
+      </div>
+    ));
   }
 
   return (
@@ -146,5 +111,16 @@ export const SimpleTabs = connect(mapStateToProps, mapDispatchToProps)((props) =
       </TabPanel>
     </div>
   );
-});
+};
 
+const mapStateToProps = (state) => {
+  return {
+    ...state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SimpleTabs);
