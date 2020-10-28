@@ -1,28 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
 import * as actionCreators from "../../../store/actions///actionCreators";
 import Button from "../button/button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
-import TextField from "@material-ui/core/TextField";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
-import axios from "axios";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const RequestRideModal = (props) => {
-  useEffect(() => {
-    if (props.selectedTrip) {
-      props.fetchUserToRequestFrom(props.selectedTrip.userId);
-    }
-  }, [props.selectedTrip]);
-
   const handleClose = () => {
     props.setRequestRideModalIsOpen(false);
   };
@@ -32,13 +24,14 @@ const RequestRideModal = (props) => {
       ...props.selectedTrip,
       requestorId: props.currentUserId,
     });
+    props.setRequestRideModalIsOpen(false);
   };
 
   return (
     <div>
       {props.userToRequestFrom && (
         <Dialog
-          open={props.requestRideModalIsOpen}
+          open={props.userToRequestFrom !== null && !props.isBusy}
           TransitionComponent={Transition}
           keepMounted
           onClose={handleClose}
@@ -78,10 +71,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setRequestRideModalIsOpen: (open) =>
       dispatch(actionCreators.setRequestRideModalIsOpen(open)),
-    fetchUserToRequestFrom: (id) =>
-      dispatch(
-        actionCreators.fetchUserById(id, actionCreators.setUserToRequestFrom)
-      ),
     requestRide: (rideRequest) =>
       dispatch(actionCreators.postRideRequestStart(rideRequest)),
   };

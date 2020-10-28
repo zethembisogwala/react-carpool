@@ -35,27 +35,30 @@ export const setError = (error) => {
 };
 
 export const postNewUserStart = (userData, path) => {
-  console.log(path, "is the path");
   return (dispatch) => {
     dispatch(setNewUserModalIsOpen(false));
     dispatch(setIsBusy(true));
     axios
       .post("https://janev-2e278.firebaseio.com/users.json", userData)
       .then((response) => {
-        dispatch(postNewUserSuccess(response.data, path));
+        dispatch(setIsBusy(false));
+        dispatch(postNewUserSuccess(response.data, path, userData.hasCar));
       })
       .catch((error) => {
+        dispatch(setIsBusy(false));
         dispatch(setError(error));
       });
   };
 };
 
-export const postNewUserSuccess = (successInfo, path) => {
+export const postNewUserSuccess = (successInfo, path, userHasCar) => {
   localStorage.setItem("userId", successInfo.name);
+  localStorage.setItem("hasCar", userHasCar);
   return {
     type: actions.POST_NEW_USER_SUCCESS,
     id: successInfo.name,
     navigate: path !== "trips",
+    hasCar: userHasCar,
   };
 };
 
@@ -67,9 +70,11 @@ export const postNewTripStart = (tripData) => {
       .post("https://janev-2e278.firebaseio.com/trips.json", tripData)
       .then((response) => {
         dispatch(postNewTripSuccess(response.data));
+        dispatch(setIsBusy(false));
       })
       .catch((error) => {
         dispatch(postNewTripError(error));
+        dispatch(setIsBusy(false));
       });
   };
 };
@@ -98,6 +103,7 @@ export const fetchAllTripsStart = (id = null) => {
     axios
       .get("https://janev-2e278.firebaseio.com/trips.json")
       .then((response) => {
+        dispatch(setIsBusy(false));
         if (id === null) {
           dispatch(fetchAllTripsSuccess(objectToList(response.data)));
         } else {
@@ -105,6 +111,7 @@ export const fetchAllTripsStart = (id = null) => {
         }
       })
       .catch((error) => {
+        dispatch(setIsBusy(false));
         dispatch(setError(error));
       });
   };
@@ -133,10 +140,12 @@ export const fetchAllUsersStart = () => {
     axios
       .get("https://janev-2e278.firebaseio.com/users.json")
       .then((response) => {
+        dispatch(setIsBusy(false));
         dispatch(fetchAllUsersSuccess(objectToList(response.data)));
       })
       .catch((error) => {
         dispatch(setError(error));
+        dispatch(setIsBusy(false));
       });
   };
 };
@@ -188,25 +197,32 @@ export const fetchTripById = (id, callback) => {
       })
       .catch((error) => {
         dispatch(setError(error));
+        dispatch(setIsBusy(false));
       });
   };
 };
 
-export const fetchUserById = (id, callback) => {
+export const fetchUserById = (id, callback, prevId) => {
   return (dispatch) => {
     dispatch(setIsBusy(true));
-    axios
-      .get(`https://janev-2e278.firebaseio.com/users/${id}.json`)
-      .then((response) => {
-        dispatch(callback(response.data));
-        dispatch(setIsBusy(false));
-      })
-      .catch();
+    if (id !== prevId) {
+      axios
+        .get(`https://janev-2e278.firebaseio.com/users/${id}.json`)
+        .then((response) => {
+          dispatch(callback(response.data));
+          dispatch(setIsBusy(false));
+        })
+        .catch((error) => {
+          dispatch(setIsBusy(false));
+          dispatch(setError(error));
+        });
+    } else {
+      dispatch(setIsBusy(false));
+    }
   };
 };
 
 export const setUserToOffer = (user) => {
-  console.log("abtraction called");
   return {
     type: actions.SET_USER_TO_OFFER,
     user: user,
@@ -214,24 +230,25 @@ export const setUserToOffer = (user) => {
 };
 
 export const setUserToRequestFrom = (user) => {
-  console.log("abtraction called");
   return {
     type: actions.SET_USER_TO_REQUEST_FROM,
     user: user,
   };
 };
 
-
 export const postRideOfferStart = (rideOffer) => {
   return (dispatch) => {
+    dispatch(setOfferRideModalIsOpen(false));
     dispatch(setIsBusy(true));
     axios
       .post("https://janev-2e278.firebaseio.com/rideOffers.json", rideOffer)
       .then((response) => {
         dispatch(postRideOfferSuccess(response.data));
+        dispatch(setIsBusy(false));
         dispatch(setSnackbarIsOpen(true, "Ride offer sent!"));
       })
       .catch((error) => {
+        dispatch(setIsBusy(false));
         dispatch(setError(error));
       });
   };
@@ -244,7 +261,6 @@ export const postRideOfferSuccess = (successInfo) => {
   };
 };
 
-
 export const postRideRequestStart = (rideRequest) => {
   return (dispatch) => {
     dispatch(setIsBusy(true));
@@ -252,9 +268,11 @@ export const postRideRequestStart = (rideRequest) => {
       .post("https://janev-2e278.firebaseio.com/rideRequests.json", rideRequest)
       .then((response) => {
         dispatch(postRideRequestSuccess(response.data));
+        dispatch(setIsBusy(false));
         dispatch(setSnackbarIsOpen(true, "Ride request sent!"));
       })
       .catch((error) => {
+        dispatch(setIsBusy(false));
         dispatch(setError(error));
       });
   };

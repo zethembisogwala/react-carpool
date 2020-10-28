@@ -10,24 +10,35 @@ import TextField from "@material-ui/core/TextField";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 import Slide from "@material-ui/core/Slide";
 import VerticalSpace from "../verticalSpace/verticalSpace";
-import axios from "axios";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const NewUserModal = (props) => {
-  const [userData, setUserData] = useState({ fullName: "", phoneNumber: "" });
+  const [userData, setUserData] = useState({ fullName: "", phoneNumber: "", hasCar: false });
 
   const handleClose = () => {
     props.setNewUserModalIsOpen(false);
   };
 
+  
+  const setHasCar = () => {
+    setUserData((prevData) => {
+      return { ...prevData, hasCar: !prevData.hasCar };
+    });
+  };
+
   const onContinueClicked = () => {
     if (userData.fullName.length > 0 && userData.phoneNumber.length > 0) {
-      const path = props.location.pathname.substring(1, props.location.pathname.length);
+      const path = props.location.pathname.substring(
+        1,
+        props.location.pathname.length
+      );
       props.postNewUser(userData, path);
     } else {
       console.log(props.appState);
@@ -83,6 +94,12 @@ const NewUserModal = (props) => {
             fullWidth
           />
           <VerticalSpace />
+          <p>
+            <FormControlLabel
+              control={<Checkbox value={userData.hasCar} onChange={setHasCar} color="default" />}
+              label="I have a car"
+            />
+          </p>
         </DialogContent>
         <DialogActions style={{ padding: 18 }}>
           <Button onClickHandler={handleClose} color="primary">
@@ -105,10 +122,14 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    setError: (error) => dispatch(actionCreators.setError(error)),
     setNewUserModalIsOpen: (open) =>
       dispatch(actionCreators.setNewUserModalIsOpen(open)),
     postNewUser: (userData, path) =>
       dispatch(actionCreators.postNewUserStart(userData, path)),
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(NewUserModal));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(NewUserModal));

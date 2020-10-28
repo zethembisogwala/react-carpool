@@ -45,6 +45,9 @@ const Trip = (props) => {
   const offerRide = () => {
     props.setSelectedTrip(props.trip);
     if (props.currentUserId) {
+      if (props.trip.userId !== props.userToOffer) {
+        props.fetchUserToOffer(props.trip.userId);
+      }
       props.setOfferRideModalIsOpen(true);
     } else {
       props.setNewUserModalIsOpen(true);
@@ -54,6 +57,9 @@ const Trip = (props) => {
   const requestRide = () => {
     props.setSelectedTrip(props.trip);
     if (props.currentUserId) {
+      if (props.trip.userId !== props.userToRequestFrom.id) {
+        props.fetchUserToRequestFrom(props.trip.userId);
+      }
       props.setRequestRideModalIsOpen(true);
     } else {
       props.setNewUserModalIsOpen(true);
@@ -91,7 +97,7 @@ const Trip = (props) => {
       </CardContent>
       {props.location.pathname === "/trips" && (
         <CardActions className="CardActions">
-          {props.trip.isDriver ? requestRideButton : offerRideButton}
+          {props.hasCar === false ? requestRideButton : offerRideButton}
         </CardActions>
       )}
     </Card>
@@ -113,6 +119,12 @@ const mapDispatchToProps = (dispatch) => {
     setNewUserModalIsOpen: (open) =>
       dispatch(actionCreators.setNewUserModalIsOpen(open)),
     setSelectedTrip: (trip) => dispatch(actionCreators.setSelectedTrip(trip)),
+    fetchUserToOffer: (id) =>
+      dispatch(actionCreators.fetchUserById(id, actionCreators.setUserToOffer)),
+    fetchUserToRequestFrom: (id) =>
+      dispatch(
+        actionCreators.fetchUserById(id, actionCreators.setUserToRequestFrom)
+      ),
   };
 };
 

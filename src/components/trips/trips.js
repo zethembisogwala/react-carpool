@@ -28,8 +28,8 @@ const Trips = (props) => {
     <div className="Trips">
       <VerticalSpace />
       {tripList}
-      {props.selectedTrip && props.isDriving && <OfferRideModal />}
-      {props.selectedTrip && !props.isDriving && <RequestRideModal />}
+      {props.offerRideModalIsOpen && props.userToOffer && <OfferRideModal />}
+      {props.requestRideModalIsOpen && props.userToRequestFrom && <RequestRideModal />}
     </div>
   );
 };

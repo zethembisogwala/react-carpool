@@ -5,7 +5,7 @@ const initialState = {
   error: false,
   isBusy: false,
   currentUserId: localStorage.getItem("userId"),
-  isDriving: null,
+  hasCar: localStorage.getItem("hasCar"),
   newUserModalIsOpen: false,
   newTripModalIsOpen: false,
   errorModalIsOpen: false,
@@ -22,7 +22,7 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
-  console.log("Reducer reached, ", action);
+  console.log("Reducer reached, ", action, state, 'state');
   switch (action.type) {
     default:
       return state;
@@ -52,6 +52,7 @@ const reducer = (state = initialState, action) => {
         isBusy: false,
         newTripModalIsOpen: action.navigate,
         currentUserId: action.id,
+        hasCar: action.hasCar
       };
     case actions.POST_NEW_USER_ERROR:
       return {

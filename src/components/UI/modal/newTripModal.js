@@ -13,7 +13,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import axios from "axios";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -117,12 +116,14 @@ const Modal = (props) => {
             type="text"
             fullWidth
           />
-          <p>
-            <FormControlLabel
-              control={<Checkbox onChange={setDriver} color="default" />}
-              label="I will use my own car"
-            />
-          </p>
+          {props.hasCar && (
+            <p>
+              <FormControlLabel
+                control={<Checkbox onChange={setDriver} color="default" />}
+                label="I will use my own car"
+              />
+            </p>
+          )}
         </DialogContent>
         <DialogActions style={{ padding: 18 }}>
           <Button onClickHandler={handleClose} color="primary">
