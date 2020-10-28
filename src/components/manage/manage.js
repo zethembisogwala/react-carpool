@@ -4,7 +4,6 @@ import { withRouter } from "react-router-dom";
 import SimpleTabs from "./tabs/tabs";
 
 import * as actionCreators from "../../store/actions/actionCreators";
-import OfferRideModal from "../UI/modal/offerRideModal";
 import "./manage.css";
 
 const Manage = (props) => {

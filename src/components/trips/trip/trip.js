@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actionCreators from "../../../store/actions/actionCreators";
 
 import "./trip.css";
-import Icon from "@material-ui/core/Icon";
+import AirportShuttleRoundedIcon from "@material-ui/icons/AirportShuttleRounded";
+import DirectionsWalkRoundedIcon from "@material-ui/icons/DirectionsWalkRounded";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -45,7 +46,7 @@ const Trip = (props) => {
   const offerRide = () => {
     props.setSelectedTrip(props.trip);
     if (props.currentUserId) {
-      if (props.trip.userId !== props.userToOffer) {
+      if (!props.userToOffer || props.trip.userId !== props.userToOffer.id) {
         props.fetchUserToOffer(props.trip.userId);
       }
       props.setOfferRideModalIsOpen(true);
@@ -57,7 +58,10 @@ const Trip = (props) => {
   const requestRide = () => {
     props.setSelectedTrip(props.trip);
     if (props.currentUserId) {
-      if (props.trip.userId !== props.userToRequestFrom.id) {
+      if (
+        !props.userToRequestFrom ||
+        props.trip.userId !== props.userToRequestFrom.id
+      ) {
         props.fetchUserToRequestFrom(props.trip.userId);
       }
       props.setRequestRideModalIsOpen(true);
@@ -74,8 +78,14 @@ const Trip = (props) => {
 
   const requestRideButton = (
     <Button onClickHandler={requestRide} size="small">
-      <Icon>star</Icon>Request ride
+      Request ride
     </Button>
+  );
+
+  const icon = props.trip.isDriver ? (
+    <AirportShuttleRoundedIcon fontSize="small" />
+  ) : (
+    <DirectionsWalkRoundedIcon fontSize="small" />
   );
 
   return (
@@ -88,8 +98,8 @@ const Trip = (props) => {
         >
           {fullName}
         </Typography>
-        <Typography variant="h5" component="h2">
-          {props.trip.from} {bull} {props.trip.to}
+        <Typography id="title" variant="h5" component="h2">
+          {props.trip.from} {bull} {icon} {bull} {props.trip.to}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
           {props.trip.date}
@@ -97,7 +107,7 @@ const Trip = (props) => {
       </CardContent>
       {props.location.pathname === "/trips" && (
         <CardActions className="CardActions">
-          {props.hasCar === false ? requestRideButton : offerRideButton}
+          {props.trip.isDriver ? requestRideButton : offerRideButton}
         </CardActions>
       )}
     </Card>

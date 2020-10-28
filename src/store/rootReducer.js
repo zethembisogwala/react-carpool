@@ -1,5 +1,4 @@
 import * as actions from "./actions/actions";
-import * as actionCreators from "./actions/actionCreators";
 
 const initialState = {
   error: false,
