@@ -284,3 +284,51 @@ export const postRideRequestSuccess = (successInfo) => {
     id: successInfo.name,
   };
 };
+
+export const fetchAllRideRequestsStart = () => {
+  return (dispatch) => {
+    dispatch(setIsBusy(true));
+    axios
+      .get("https://janev-2e278.firebaseio.com/rideRequests.json")
+      .then((response) => {
+        console.log(response);
+        dispatch(fetchAllRideRequestsSuccess(objectToList(response.data)));
+        dispatch(setIsBusy(false));
+      })
+      .catch((error) => {
+        dispatch(setIsBusy(false));
+        dispatch(setError(error));
+      });
+  };
+};
+
+export const fetchAllRideRequestsSuccess = (rideRequests) => {
+  return {
+    type: actions.FETCH_ALL_RIDE_REQUESTS_SUCCESS,
+    rideRequests: rideRequests,
+  };
+};
+
+export const fetchAllRideOffersStart = () => {
+  return (dispatch) => {
+    dispatch(setIsBusy(true));
+    axios
+      .get("https://janev-2e278.firebaseio.com/rideOffers.json")
+      .then((response) => {
+        console.log(response);
+        dispatch(fetchAllRideOffersSuccess(objectToList(response.data)));
+        dispatch(setIsBusy(false));
+      })
+      .catch((error) => {
+        dispatch(setError(error));
+        dispatch(setIsBusy(false));
+      });
+  };
+};
+
+export const fetchAllRideOffersSuccess = (rideOffers) => {
+  return {
+    type: actions.FETCH_ALL_RIDE_OFFERS_SUCCESS,
+    rideOffers: rideOffers,
+  };
+};

@@ -1,0 +1,9 @@
+export const SET_NEW_USER_MODAL_IS_OPEN = "SET_NEW_USER_MODAL_IS_OPEN";
+
+export const SET_NEW_TRIP_MODAL_IS_OPEN = "SET_NEW_TRIP_MODAL_IS_OPEN";
+
+export const SET_IS_BUSY = "SET_IS_BUSY";
+
+export const SET_ERROR = "SET_ERROR";
+
+export const SET_SNACKBAR_IS_OPEN = "SET_SNACKBAR_IS_OPEN";

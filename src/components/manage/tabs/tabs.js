@@ -62,17 +62,42 @@ export const SimpleTabs = (props) => {
   let availableTrips = <i className="Layout">No trips to display.</i>;
   console.log(props.trips);
   if (props.trips !== null) {
-    availableTrips = props.trips.map((trip) => (
-      <div className="ManageTabs">
-        <Trip
-          key={trip.id}
-          trip={trip}
-          setOpen={props.setOpen}
-          setAppState={props.setAppState}
-          appState={props.appState}
-        />
-      </div>
-    ));
+    availableTrips = props.trips
+      .filter((item) => item.userId === props.currentUserId)
+      .map((trip) => (
+        <div className="ManageTabs">
+          <Trip
+            key={trip.id}
+            trip={trip}
+            setOpen={props.setOpen}
+            setAppState={props.setAppState}
+            appState={props.appState}
+          />
+        </div>
+      ));
+  }
+
+  let myRideRequests = <i>You have not made any ride requests yet.</i>;
+  let myRideOffers = <i>You have not made any ride offers yet.</i>;
+
+  if (props.rideRequests !== null) {
+    myRideRequests = props.rideRequests
+      .filter((rideRequest) => rideRequest.requestorId === props.currentUserId)
+      .map((myRideRequest) => (
+        <div>
+          <p>{myRideRequest.id} HHHHH</p>
+        </div>
+      ));
+  }
+
+  if (props.rideOffers !== null) {
+    myRideOffers = props.rideOffers
+      .filter((rideOffer) => rideOffer.offerorId === props.currentUserId)
+      .map((myRideOffer) => (
+        <div className="ManageTabs">
+          <p>{myRideOffer.id}</p>
+        </div>
+      ));
   }
 
   return (
@@ -101,10 +126,10 @@ export const SimpleTabs = (props) => {
         {availableTrips}
       </TabPanel>
       <TabPanel className="Layout" value={value} index={1}>
-        No requests to show
+        {myRideRequests}
       </TabPanel>
       <TabPanel className="Layout" value={value} index={2}>
-        No offers to show
+        {myRideOffers}
       </TabPanel>
     </div>
   );

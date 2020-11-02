@@ -13,6 +13,8 @@ const Manage = (props) => {
       console.log('printing', props)
       props.fetchAllMyTrips();
       props.fetchAllUsers();
+      props.fetchAllRideRequests();
+      props.fetchAllRideOffers();
     }
   }, []);
   return (
@@ -31,6 +33,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchAllMyTrips: () => dispatch(actionCreators.fetchAllTripsStart()),
     fetchAllUsers: () => dispatch(actionCreators.fetchAllUsersStart()),
+    fetchAllRideRequests: () => dispatch(actionCreators.fetchAllRideRequestsStart()),
+    fetchAllRideOffers: () => dispatch(actionCreators.fetchAllRideOffersStart())
   };
 };
 

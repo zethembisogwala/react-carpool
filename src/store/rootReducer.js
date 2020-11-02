@@ -18,6 +18,8 @@ const initialState = {
   requestRideModalIsOpen: false,
   userToRequestFrom: null,
   userToOffer: null,
+  rideOffers: null,
+  rideRequests: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -131,6 +133,16 @@ const reducer = (state = initialState, action) => {
         ...state,
         userToRequestFrom: action.user,
       };
+    case actions.FETCH_ALL_RIDE_OFFERS_SUCCESS:
+      return {
+        ...state,
+        rideOffers: action.rideOffers
+      }
+    case actions.FETCH_ALL_RIDE_REQUESTS_SUCCESS:
+      return {
+        ...state,
+        rideRequests: action.rideRequests
+      }
   }
 };
 
